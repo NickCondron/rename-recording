@@ -293,10 +293,12 @@ fn main() {
         }
         new_name.push_str(".gci");
 
+        let mut new_file: PathBuf = file.clone();
+        new_file.set_file_name(new_name);
         if args.in_place {
-            match std::fs::rename(&file, &new_name) {
+            match std::fs::rename(&file, &new_file) {
                 Ok(_) => {
-                    println!("Renamed {:?} to {:?}", file, new_name);
+                    println!("Renamed {:?} to {:?}", file, new_file);
                 }
                 Err(e) => {
                     eprintln!("Could not rename {:?}: {}", file, e);
@@ -304,9 +306,9 @@ fn main() {
                 }
             }
         } else {
-            match std::fs::copy(&file, &new_name) {
+            match std::fs::copy(&file, &new_file) {
                 Ok(_) => {
-                    println!("Copied {:?} to {:?}", file, new_name);
+                    println!("Copied {:?} to {:?}", file, new_file);
                 }
                 Err(e) => {
                     eprintln!("Could not copy {:?}: {}", file, e);
