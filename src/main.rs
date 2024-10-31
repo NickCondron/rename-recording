@@ -261,10 +261,7 @@ fn main() {
         let year = u16::from_be_bytes([block[0x32], block[0x33]]);
         let name = &block[0x37..0x57];
 
-        let null = name
-            .iter()
-            .position(|&b| b == 0)
-            .expect("Missing null terminator");
+        let null = name.iter().position(|&b| b == 0).unwrap_or(name.len());
         let name = String::from_utf8((&name[..null]).to_vec()).unwrap();
 
         let mut new_name = String::with_capacity(100);
