@@ -1,7 +1,10 @@
-## Rename replays
+## Rename Recordings
+
+Command line tool to automatically rename recording save files (.gci) from
+[Training Mode](https://github.com/AlexanderHarrison/TrainingMode-More).
 
 ```
-Usage: rename-replay [OPTIONS] <FILES>...
+Usage: rename-recording [OPTIONS] <FILES>...
 
 Arguments:
   <FILES>...

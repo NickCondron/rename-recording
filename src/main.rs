@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use clap::Parser;
 
 #[derive(Parser)]
-#[command(name = "Replay Rename")]
+#[command(name = "Rename Recording")]
 #[command(version = "0.1")]
 #[command(about = "Automatically rename Training Mode recording .gci files", long_about = None)]
 struct Cli {
