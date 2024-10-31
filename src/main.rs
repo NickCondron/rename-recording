@@ -5,7 +5,7 @@ use clap::Parser;
 
 #[derive(Parser)]
 #[command(name = "Rename Recording")]
-#[command(version = "0.1")]
+#[command(version = "0.2")]
 #[command(about = "Automatically rename Training Mode recording .gci files", long_about = None)]
 struct Cli {
     /// File name format string
