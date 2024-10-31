@@ -227,9 +227,12 @@ fn main() {
     }
 
     for file in args.files {
-        let Ok(mut gci) = std::fs::read(&file) else {
-            eprintln!("Could not read input file {:?}", file);
-            continue;
+        let mut gci = match std::fs::read(&file) {
+            Ok(gci) => gci,
+            Err(e) => {
+                eprintln!("Could not read input file {:?}: {}", file, e);
+                continue;
+            }
         };
 
         if gci.get(0..6).is_none_or(|s| s != "GTME01".as_bytes())
