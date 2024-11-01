@@ -47,20 +47,20 @@ fn deobfuscate_byte(r3: u8, r4: u8) -> u8 {
     let r5;
     match b % 7 {
         0 => {
-            r5 = ((r4 & 0x01) << 0)
+            r5 = (r4 & 0x01)
                 | ((r4 & 0x02) << 1)
                 | ((r4 & 0x04) << 2)
                 | ((r4 & 0x08) << 3)
                 | ((r4 & 0x10) >> 3)
                 | ((r4 & 0x20) >> 2)
                 | ((r4 & 0x40) >> 1)
-                | ((r4 & 0x80) >> 0);
+                | (r4 & 0x80);
             r4 = r5 & 0xFF;
         }
         1 => {
             r5 = ((r4 & 0x01) << 1)
                 | ((r4 & 0x02) << 6)
-                | ((r4 & 0x04) << 0)
+                | (r4 & 0x04)
                 | ((r4 & 0x08) >> 3)
                 | ((r4 & 0x10) << 1)
                 | ((r4 & 0x20) >> 1)
@@ -105,7 +105,7 @@ fn deobfuscate_byte(r3: u8, r4: u8) -> u8 {
             r5 = ((r4 & 0x01) << 5)
                 | ((r4 & 0x02) << 5)
                 | ((r4 & 0x04) << 5)
-                | ((r4 & 0x08) >> 0)
+                | (r4 & 0x08)
                 | ((r4 & 0x10) >> 2)
                 | ((r4 & 0x20) >> 5)
                 | ((r4 & 0x40) >> 5)
@@ -114,10 +114,10 @@ fn deobfuscate_byte(r3: u8, r4: u8) -> u8 {
         }
         6 => {
             r5 = ((r4 & 0x01) << 6)
-                | ((r4 & 0x02) << 0)
+                | (r4 & 0x02)
                 | ((r4 & 0x04) >> 2)
                 | ((r4 & 0x08) << 2)
-                | ((r4 & 0x10) << 0)
+                | (r4 & 0x10)
                 | ((r4 & 0x20) << 2)
                 | ((r4 & 0x40) >> 4)
                 | ((r4 & 0x80) >> 4);
@@ -128,15 +128,15 @@ fn deobfuscate_byte(r3: u8, r4: u8) -> u8 {
 
     r4 ^= ENCODE_LUT[(b % 13) as usize];
     r4 ^= r3 as u32;
-    return r4 as u8;
+    r4 as u8
 }
 
 fn decode_block(src: &mut [u8]) -> i32 {
     let mut checksum = [0u8; 16];
     let mut x = src[15];
-    for i in 16..src.len() {
-        let y = src[i];
-        src[i] = deobfuscate_byte(x, y);
+    for val in src.iter_mut().skip(16) {
+        let y = *val;
+        *val = deobfuscate_byte(x, y);
         x = y;
     }
     calculate_checksum(&src[16..], &mut checksum);
@@ -147,7 +147,7 @@ fn decode_block(src: &mut [u8]) -> i32 {
         }
     }
 
-    return 0;
+    0
 }
 
 fn calculate_checksum(src: &[u8], result: &mut [u8]) {
@@ -202,7 +202,7 @@ fn char_name(char: u8) -> Option<&'static str> {
 }
 
 fn valid_format_str(format: &str) -> bool {
-    if format.len() < 1 {
+    if format.is_empty() {
         return false;
     }
 
@@ -215,7 +215,7 @@ fn valid_format_str(format: &str) -> bool {
             }
         }
     }
-    return true;
+    true
 }
 
 fn main() {
@@ -243,14 +243,14 @@ fn main() {
         }
 
         // decode first block which starts at 0x1EB0 and is 400 bytes long
-        let Some(mut block) = gci.get_mut(0x1EB0..0x2040) else {
+        let Some(block) = gci.get_mut(0x1EB0..0x2040) else {
             eprintln!(
                 "{:?} is shorter than expected. Ensure it is a gci file",
                 file
             );
             continue;
         };
-        if decode_block(&mut block) != 0 {
+        if decode_block(block) != 0 {
             eprintln!("Could not decode {:?}. Ensure it is a gci file", file);
             continue;
         }
@@ -265,7 +265,7 @@ fn main() {
         let name = &block[0x37..0x57];
 
         let null = name.iter().position(|&b| b == 0).unwrap_or(name.len());
-        let name = String::from_utf8((&name[..null]).to_vec()).unwrap();
+        let name = String::from_utf8(name[..null].to_vec()).unwrap();
 
         let mut new_name = String::with_capacity(100);
         let mut format_chars = args.format.chars().peekable();
